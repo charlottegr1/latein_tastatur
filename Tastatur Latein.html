@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Latein-Tastatur</title>
+<style>
+:root{--bg:#f6f3ee;--surface:#fff;--key:#fff;--key-h:#ece6da;--mod:#e6dcc8;--text:#26221c;--muted:#7a7266;--line:#d8d0c0;--accent:#8c2f2f;--accent-t:#fff;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1c1a17;--surface:#26231f;--key:#33302b;--key-h:#403c35;--mod:#4a4336;--text:#efe9dd;--muted:#a39b8c;--line:#47423a;--accent:#d98a7a;--accent-t:#1c1a17;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#1c1a17;--surface:#26231f;--key:#33302b;--key-h:#403c35;--mod:#4a4336;--text:#efe9dd;--muted:#a39b8c;--line:#47423a;--accent:#d98a7a;--accent-t:#1c1a17;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+main{max-width:860px;margin:0 auto;padding:16px}
+header{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+h1{font-size:1.25rem;margin:0;font-family:Georgia,"Times New Roman",serif}
+.tools{display:flex;gap:8px}
+button{font:inherit;color:var(--text);cursor:pointer}
+.tool{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:6px 12px}
+.tool:hover{background:var(--key-h)}
+.tool.primary{background:var(--accent);color:var(--accent-t);border-color:var(--accent)}
+textarea{width:100%;min-height:170px;resize:vertical;padding:12px;border:1px solid var(--line);border-radius:10px;background:var(--surface);color:var(--text);font:1.35rem/1.6 Cambria,Georgia,"Times New Roman",serif}
+textarea:focus{outline:2px solid var(--accent);outline-offset:1px}
+.kb{position:relative;margin-top:12px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px;user-select:none;-webkit-user-select:none;touch-action:manipulation}
+.row{display:flex;justify-content:center;gap:5px;margin-bottom:5px}
+.row:last-child{margin-bottom:0}
+.k{flex:1 1 0;max-width:62px;min-width:0;height:48px;background:var(--key);border:1px solid var(--line);border-radius:8px;font:1.25rem Cambria,Georgia,serif;display:flex;align-items:center;justify-content:center;padding:0}
+.k:hover,.k:active{background:var(--key-h)}
+.k.mod{background:var(--mod);max-width:none;flex:1.4 1 0;flex-direction:column;line-height:1.1}
+.k.mod small{font:0.68rem system-ui,sans-serif;color:var(--muted)}
+.k.mod .g{font-size:1.45rem}
+.k.wide{flex:1.6 1 0;max-width:none;font:0.9rem system-ui,sans-serif}
+.k.space{flex:6 1 0;max-width:none}
+.k.on{background:var(--accent);color:var(--accent-t);border-color:var(--accent)}
+#pop{position:absolute;z-index:5;display:none;gap:4px;flex-wrap:wrap;max-width:300px;padding:6px;background:var(--surface);border:1px solid var(--line);border-radius:10px;box-shadow:0 6px 20px rgba(0,0,0,.25)}
+#pop button{width:44px;height:44px;border:1px solid var(--line);border-radius:8px;background:var(--key);font:1.35rem Cambria,Georgia,serif}
+#pop button:hover{background:var(--accent);color:var(--accent-t)}
+.hint{margin-top:12px;color:var(--muted);font-size:.88rem;line-height:1.5}
+kbd{background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:0 5px;font:inherit;font-size:.85em}
+@media (max-width:520px){.k{height:44px;font-size:1.1rem}main{padding:10px}}
+</style>
+</head>
+<body>
+<main>
+<header>
+ <h1>Tastatur Latein</h1>
+ <div class="tools">
+  <button class="tool" id="theme">Dunkles Theme</button>
+  <button class="tool" id="clear">Leeren</button>
+  <button class="tool primary" id="copy">Kopieren</button>
+ </div>
+</header>
+
+<textarea id="ta" placeholder="Hier Text eingeben …" spellcheck="false" autofocus></textarea>
+
+<div class="kb" id="kb">
+ <div class="row" id="mods"></div>
+ <div class="row" data-r="qwertzuiop"></div>
+ <div class="row" data-r="asdfghjkl"></div>
+ <div class="row" id="r3"></div>
+ <div class="row" id="r4"></div>
+ <div id="pop"></div>
+</div>
+
+<p class="hint">
+ Die Zeichen wirken auf den <b>Buchstaben links vom Cursor</b>; ein zweiter Klick nimmt sie wieder weg. Länge und Kürze schließen sich aus, mit Punkt unter und Punkt über lassen sie sich kombinieren (z. B. ạ̄).
+ Ein Buchstabe lässt sich <b>lang drücken</b>, um alle Varianten zu sehen.<br>
+ Physische Tastatur: <kbd>Alt</kbd>+<kbd>1</kbd> Länge · <kbd>Alt</kbd>+<kbd>2</kbd> Kürze · <kbd>Alt</kbd>+<kbd>3</kbd> Punkt unter · <kbd>Alt</kbd>+<kbd>4</kbd> Punkt über · <kbd>Alt</kbd>+<kbd>5</kbd> Crux (†) · <kbd>ß</kbd> Hochpunkt (·).
+</p>
+</main>
+
+<script>
+(function(){
+var ta=document.getElementById('ta'),kb=document.getElementById('kb'),pop=document.getElementById('pop');
+var M={mac:'\u0304',bre:'\u0306',dbl:'\u0323',dab:'\u0307'};
+var shift=false,shiftBtn=null,letterBtns=[];
+
+function ins(t){
+ ta.focus();
+ ta.setRangeText(t,ta.selectionStart,ta.selectionEnd,'end');
+}
+function toggleMark(m){
+ ta.focus();
+ var pos=ta.selectionEnd,s=ta.value.slice(0,pos),i=s.length;
+ while(i>0&&/\p{M}/u.test(s[i-1]))i--;
+ if(i===0)return;
+ i--;
+ var cl=s.slice(i);
+ var parts=Array.from(cl.normalize('NFD'));
+ if(!/\p{L}/u.test(parts[0]))return;
+ var base=parts[0],marks=parts.slice(1);
+ if((m===M.mac||m===M.bre)&&!/[aeiouy]/i.test(base))return;
+ var k=marks.indexOf(m);
+ if(k>=0){marks.splice(k,1);}
+ else{
+  if(m===M.mac)marks=marks.filter(function(x){return x!==M.bre});
+  if(m===M.bre)marks=marks.filter(function(x){return x!==M.mac});
+  marks.push(m);
+ }
+ var out=(base+marks.join('')).normalize('NFC');
+ ta.setSelectionRange(i,pos);
+ ta.setRangeText(out,i,pos,'end');
+}
+function variants(ch){
+ var c=[[],[M.mac],[M.bre],[M.dbl],[M.dab]];
+ if(/[aeiouy]/i.test(ch)){c.push([M.mac,M.dbl],[M.bre,M.dbl],[M.mac,M.dab],[M.bre,M.dab]);}
+ else c=[[],[M.dbl],[M.dab]];
+ return c.map(function(a){return (ch+a.join('')).normalize('NFC')});
+}
+function setShift(v){
+ shift=v;shiftBtn.classList.toggle('on',v);
+ letterBtns.forEach(function(b){b.textContent=v?b.dataset.c.toUpperCase():b.dataset.c});
+}
+function ch(b){return shift?b.dataset.c.toUpperCase():b.dataset.c}
+function hidePop(){pop.style.display='none'}
+
+function mkKey(c){
+ var b=document.createElement('button');
+ b.className='k';b.type='button';b.dataset.c=c;b.textContent=c;
+ var timer=null,long=false;
+ b.addEventListener('pointerdown',function(e){
+  e.preventDefault();long=false;hidePop();
+  timer=setTimeout(function(){
+   long=true;
+   if(!/\p{L}/u.test(c)||c==='·')return;
+   pop.innerHTML='';
+   variants(ch(b)).forEach(function(v){
+    var p=document.createElement('button');p.type='button';p.textContent=v;
+    p.addEventListener('pointerdown',function(ev){ev.preventDefault();ins(v);hidePop();if(shift)setShift(false)});
+    pop.appendChild(p);
+   });
+   var r=b.getBoundingClientRect(),kr=kb.getBoundingClientRect();
+   pop.style.display='flex';
+   var w=pop.offsetWidth,h=pop.offsetHeight;
+   var x=Math.max(0,Math.min(r.left-kr.left+r.width/2-w/2,kr.width-w));
+   pop.style.left=x+'px';pop.style.top=(r.top-kr.top-h-6)+'px';
+  },420);
+ });
+ b.addEventListener('pointerup',function(e){
+  e.preventDefault();clearTimeout(timer);
+  if(long)return;
+  ins(ch(b));if(shift)setShift(false);
+ });
+ b.addEventListener('pointerleave',function(){clearTimeout(timer)});
+ b.addEventListener('contextmenu',function(e){e.preventDefault()});
+ if(/\p{L}/u.test(c))letterBtns.push(b);
+ return b;
+}
+function mkBtn(label,cls,fn,sub){
+ var b=document.createElement('button');b.type='button';b.className='k '+cls;
+ if(sub){b.innerHTML='<span class="g">'+label+'</span><small>'+sub+'</small>'}else b.textContent=label;
+ b.addEventListener('pointerdown',function(e){e.preventDefault()});
+ b.addEventListener('click',function(){hidePop();fn()});
+ return b;
+}
+
+// Modifier-Zeile
+var mods=document.getElementById('mods');
+[['\u25CC'+M.mac,'mac','Länge'],['<svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M7.5 4.5Q12 10.5 16.5 4.5"/><circle cx="12" cy="16" r="5" stroke-dasharray="1.6 2.2"/></svg>','bre','Kürze'],['\u25CC'+M.dbl,'dbl','Punkt unter'],['\u25CC'+M.dab,'dab','Punkt über']].forEach(function(d){
+ mods.appendChild(mkBtn(d[0],'mod',function(){toggleMark(M[d[1]])},d[2]));
+});
+mods.appendChild(mkBtn('·','mod',function(){ins('·')},'Hochpunkt'));
+mods.appendChild(mkBtn('†','mod',function(){ins('†')},'Crux'));
+
+// Buchstabenreihen
+document.querySelectorAll('.row[data-r]').forEach(function(r){
+ r.dataset.r.split('').forEach(function(c){r.appendChild(mkKey(c))});
+});
+var r3=document.getElementById('r3');
+shiftBtn=mkBtn('⇧','wide',function(){setShift(!shift)});
+r3.appendChild(shiftBtn);
+'yxcvbnm'.split('').forEach(function(c){r3.appendChild(mkKey(c))});
+r3.appendChild(mkBtn('⌫','wide',function(){
+ ta.focus();
+ if(ta.selectionStart!==ta.selectionEnd){ta.setRangeText('',ta.selectionStart,ta.selectionEnd,'end');return}
+ var p=ta.selectionStart;if(p===0)return;
+ var s=ta.value.slice(0,p),i=s.length-1;
+ while(i>0&&/\p{M}/u.test(s[i]))i--;
+ ta.setRangeText('',i,p,'end');
+}));
+var r4=document.getElementById('r4');
+'()[]⟨⟩⟦⟧'.split('').forEach(function(c){r4.appendChild(mkKey(c))});
+r4.appendChild(mkBtn('Leerzeichen','space',function(){ins(' ')}));
+r4.appendChild(mkBtn('↵','wide',function(){ins('\n')}));
+
+document.addEventListener('pointerdown',function(e){if(!pop.contains(e.target))hidePop()});
+
+// Physische Tastatur
+ta.addEventListener('keydown',function(e){
+ if(e.altKey&&!e.ctrlKey&&!e.metaKey){
+  if(e.code==='Digit5'){e.preventDefault();ins('†');return}
+  var m={Digit1:M.mac,Digit2:M.bre,Digit3:M.dbl,Digit4:M.dab}[e.code];
+  if(m){e.preventDefault();toggleMark(m);return}
+ }
+ if(e.key==='ß'&&!e.ctrlKey&&!e.metaKey){e.preventDefault();ins('·')}
+});
+
+// Werkzeuge
+var cp=document.getElementById('copy');
+cp.addEventListener('click',function(){
+ function done(){cp.textContent='Kopiert ✓';setTimeout(function(){cp.textContent='Kopieren'},1500)}
+ if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(ta.value).then(done,function(){ta.select();document.execCommand('copy');done()})}
+ else{ta.select();document.execCommand('copy');done()}
+});
+document.getElementById('clear').addEventListener('click',function(){ta.value='';ta.focus()});
+var root=document.documentElement,tb=document.getElementById('theme');
+function dark(){return root.dataset.theme==='dark'||(root.dataset.theme!=='light'&&matchMedia('(prefers-color-scheme: dark)').matches)}
+function label(){tb.textContent=dark()?'Helles Theme':'Dunkles Theme'}
+tb.addEventListener('click',function(){root.dataset.theme=dark()?'light':'dark';label()});
+label();
+})();
+</script>
+</body>
+</html>
